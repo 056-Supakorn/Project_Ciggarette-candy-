@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cigarette Candy</title>
+    <link rel="stylesheet" href="../CSS/index.css">
+</head>
+<body>
+    <header>
+        <h1> <img src="../img/download.jpg" alt="Cigarette Candy" class="small-image">Cigarette Candy</h1>
+        <nav>
+            <ul>
+                <li><a href="../HTML/index.html">หน้าแรก</a></li>
+                <li><a href="..//HTML/product.html">สินค้า</a></li>
+                <li><a href="../HTML/index.html#about">เกี่ยวกับเรา</a></li>
+                <li><a href="../HTML/index.html#contact">ติดต่อเรา</a></li>
+                <li><a href="../HTML/login.html">เข้าสู่ระบบ</a></li>
+                <li><a href="../HTML/register.html">สมัครสมาชิก</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section id="home">
+        <div class="hero">
+            <h2>ยินดีต้อนรับสู่ร้านขายลูกอม</h2>
+            <p>ลูกอมอร่อย ส่งตรงถึงคุณ, </p>
+            <a href="../HTML/product.html" class="btn">ดูสินค้า</a>
+        </div>
+    </section>
+
+    <section id="products">
+        <h2>สินค้าของเรา</h2>
+        <div class="product-grid" id="product-grid">
+            <!-- ข้อมูลผลิตภัณฑ์จะถูกเพิ่มที่นี่โดย JavaScript -->
+        </div>
+    </section>
+
+    <script>
+        // ดึงข้อมูลผลิตภัณฑ์จาก API
+        fetch('../api/product.php')
+            .then(response => response.json())
+            .then(products => {
+                const productGrid = document.getElementById('product-grid');
+                
+                // จำกัดจำนวนสินค้าให้เหลือ 3 รายการ
+                const limitedProducts = products.slice(0, 3);
+    
+                limitedProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+    
+                    const productImage = document.createElement('img');
+                    productImage.src = `../${product.image_path}`;
+                    productImage.alt = product.name;
+                    productImage.className = 'product-img';
+    
+                    const productName = document.createElement('h3');
+                    productName.textContent = product.name;
+    
+                    const productPrice = document.createElement('p');
+                    productPrice.textContent = `ราคา: ${product.price} บาท`;
+    
+                    const addToCartButton = document.createElement('button');
+            addToCartButton.textContent = 'เพิ่มลงตะกร้า';
+            addToCartButton.addEventListener('click', () => {
+                // เก็บข้อมูลสินค้าใน localStorage
+                const cartItem = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1 // เริ่มต้นจำนวนเป็น 1
+                };
+
+                // ดึงข้อมูลตะกร้าจาก localStorage
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // ตรวจสอบว่าสินค้ามีอยู่ในตะกร้าหรือไม่
+                const existingItem = cart.find(item => item.id === product.id);
+                if (existingItem) {
+                    existingItem.quantity += 1; // เพิ่มจำนวนถ้ามีอยู่แล้ว
+                } else {
+                    cart.push(cartItem); // เพิ่มสินค้าใหม่ถ้ายังไม่มี
+                }
+
+                // บันทึกข้อมูลตะกร้ากลับไปที่ localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // เด้งไปหน้า cart.html
+                window.location.href = '../HTML/cart.html';
+            });
+    
+                    productCard.appendChild(productImage);
+                    productCard.appendChild(productName);
+                    productCard.appendChild(productPrice);
+                    productCard.appendChild(addToCartButton);
+    
+                    productGrid.appendChild(productCard);
+                });
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    </script>
+
+    <section id="about">
+        <h2>เกี่ยวกับเรา</h2>
+        <p>เราคือร้านขายลูกอมออนไลน์ที่มุ่งมั่นนำเสนอลูกอมรสชาติอร่อยและคุณภาพดีที่สุดให้กับคุณ</p>
+    </section>
+
+    <section id="contact">
+        <h2>ติดต่อเรา</h2>
+        <form>
+            <label for="name">ชื่อ:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">อีเมล:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">ข้อความ:</label>
+            <textarea id="message" name="message" required></textarea>
+            <button type="submit">ส่งข้อความ</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; Cigarette Candy. All rights reserved.</p>
+    </footer>
+</body>
+</html>

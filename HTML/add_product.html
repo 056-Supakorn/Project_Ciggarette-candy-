@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มสินค้า - Cigarette Candy</title>
+    <link rel="stylesheet" href="../CSS/add_product.css">
+</head>
+<body>
+    <header>
+        <h1><img src="../img/download.jpg" alt="Cigarette Candy" class="small-image">เพิ่มสินค้า</h1>
+        <nav>
+            <ul>
+                <li><a href="../HTML/index.html">กลับสู่หน้าหลัก</a></li>
+                <li><a href="../HTML/admin.html">แผงควบคุม</a></li>
+                <li><a href="../HTML/logout.html">ออกจากระบบ</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="add-product">
+        <h2>เพิ่มสินค้าใหม่</h2>
+        <form id="add-product-form">
+            <div class="form-group">
+                <label for="name">ชื่อสินค้า:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">คำอธิบาย:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">ราคา:</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="image">รูปภาพ:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+            <button type="submit">เพิ่มสินค้า</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; Cigarette Candy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // เมื่อส่งฟอร์ม
+        document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('price', document.getElementById('price').value);
+            formData.append('image', document.getElementById('image').files[0]);
+
+            try {
+                // ส่งข้อมูลสินค้าไปยัง API
+                const response = await fetch('../api/add_product.php', {
+                    method: 'POST',                   
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('เพิ่มสินค้าเรียบร้อยแล้ว');
+                    window.location.href = '../HTML/admin.html'; // กลับไปที่แผงควบคุม
+                } else {
+                    alert('เกิดข้อผิดพลาดในการเพิ่มสินค้า: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+            }
+        });
+    </script>
+</body>
+</html>
